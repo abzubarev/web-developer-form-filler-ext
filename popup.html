@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link href="bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="javascripts/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="javascripts/popup.js"></script>
+
+    <style type="text/css">
+        body { color: #000; font: 12px/20px Helvetica,arial,sans-serif; padding: 10px; margin: 0; text-align: center; }
+        .clicked { background-color: #9BCFFF!important; }
+        table#sets { margin-bottom: 0;margin-top: 10px;margin-right: 60px;min-width: 300px; }
+        table#sets td.remove { width: 45px; }
+        table#sets tbody tr { cursor: pointer; }
+        table#sets thead tr { cursor: default; }
+        table#sets td { text-align: center;vertical-align: middle; }
+        table#sets td, table#sets th { -webkit-user-select: none; }
+        table#sets tbody td:hover {background-color: #D5EBFF;}
+        table#sets tbody td.remove:hover {background-color: #FFB0B0;}
+        table#sets button { margin-top: -3px; }
+        table#sets input.txtSetName { margin-top: 0;margin-bottom: 0;height: 15px;width: 90px; }
+        table#sets input[type=checkbox] { margin-top: -3px; }
+    </style>
+</head>
+    <body>
+        <div class="btn-group">
+            <!--<button type="button" id="check" class="btn"><i class="icon-eye-open"></i></button>-->
+            <button type="button" id="store" class="btn"><i class="icon-arrow-down"></i> Save form</button>
+            <button type="button" title="Clear all sets for current URL" id="clearall" class="btn"><i class="icon-trash"></i> Clear Sets</button>
+        </div>
+
+        <div class="text-center" id="nosets" style="display: none;">
+            <h6>No saved sets</h6>
+        </div>
+
+        <table id="sets" class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Set Name</th>
+                    <th>SubmitForm</th>
+                    <th></th>
+                    <th>Hotkey</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <div id="hotkeyBlock" style="display: none">
+            <h4 id="hHotkey">Type your hotkey</h4>
+            <div class="form-inline text-left ">
+                <p>For modifier keys you can use <code>shift</code>, <code>ctrl</code>, <code>alt</code>, <code>option</code>, <code>meta</code>, and <code>command</code>.</p>
+                <p>Other special keys are <code>backspace</code>, <code>tab</code>, <code>enter</code>, <code>return</code>, <code>capslock</code>, <code>esc</code>, <code>escape</code>, <code>space</code>, <code>pageup</code>, <code>pagedown</code>, <code>end</code>, <code>home</code>, <code>left</code>, <code>up</code>, <code>right</code>, <code>down</code>, <code>ins</code>, and <code>del</code>.</p>
+                <p>Any other key you should be able to reference by name like <code>a</code>, <code>/</code>, <code>$</code>, <code>*</code>, or <code>=</code>.</p>
+                <div class="input-append">
+                    <input type="text" class="span2" id="txtHotkey" value="shift+k"/>
+                    <button class="btn" id="btnHotkeySave">Save</button>
+                    <button class="btn" id="btnHotkeyCancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

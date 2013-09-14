@@ -1,0 +1,27 @@
+{
+	"content_scripts" : [ {
+				"js" : ["javascripts/jquery-1.9.1.min.js", "javascripts/jquery.nmx.deserialize-0.1.js", "javascripts/content_script.js", "javascripts/mousetrap.min.js" ],
+				"matches" : [ "http://*/*", "https://*/*" ],
+				"run_at" : "document_end"
+				} ],
+	"name": "Web Developer Form Filler",
+	"version": "1.0",
+	"icons" : { 
+			"16" :  "images/16.png",
+		    "48" :  "images/48.png",
+		    "128" : "images/128.png"},
+	"description": "This extension is used by developers to make it easy to fill forms",
+	"browser_action": {
+		"default_icon": "images/48.png",
+		"default_title": "Form Filler",
+		"default_popup": "popup.html"
+	},
+	"background": {
+		"scripts": ["javascripts/background.js"]
+	},
+	"permissions": [
+		"tabs",
+		"http://*/", "https://*/"
+	],
+	"manifest_version":2
+}
