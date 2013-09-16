@@ -70,7 +70,7 @@ function sendMessage(obj, callback) {
 }
 
 chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
-    tab_url = tab[0].url.split('?')[0];
+    tab_url = tab[0].url.split('?')[0].toLowerCase();
     refreshSetsList();
 });
 
@@ -185,7 +185,7 @@ $(document).ready(function () {
 
         td.addClass('active');
         hotkeyBlock.show();
-        hotkeyBlock.find('#txtHotkey').val(value);
+        hotkeyBlock.find('#txtHotkey').val(value).focus().select();
     });
     
     sets.on("click", 'td.setName', function (event) {
@@ -220,7 +220,14 @@ $(document).ready(function () {
             saveValue(tr, 'name', value);
         }
     });
-
+    
+    $('#hotkeyBlock').on("keyup", '#txtHotkey', function (e) {
+        var code = e.keyCode || e.which;
+        if (code == 13) { //Enter keycode
+            $('#btnHotkeySave').click();
+        }
+    });
+    
     $('#btnHotkeySave').click(function() {
         $('#hotkeyBlock').hide();
         var tr = $('#sets td.hotkey.active').parents('tr');
