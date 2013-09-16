@@ -89,7 +89,7 @@
                     return true;
                 }
 
-                if ($current.is('input:text')) {
+                if ($current.is('input:text, input:password')) {
                     if ($currentSavedValue === undefined) {
                         $current.val('');
                     } else {
