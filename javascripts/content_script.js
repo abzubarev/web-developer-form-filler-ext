@@ -70,9 +70,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
-$(function () {
-    bindHotkeys();
-});
+bindHotkeys();
 
 function bindHotkeys() {
     chrome.runtime.sendMessage({ "action": "gethotkeys" }, function (hotkeys) {

@@ -27,7 +27,11 @@ function refreshSetsList() {
         newRow.append('<td class="setName">' + set.name + '</td>');
         
         var isChecked = set.autoSubmit ? "checked" : "";
-        newRow.append('<td class="submit"><input ' + isChecked + ' type="checkbox" /></td>');
+        var submitHtml = isChecked
+            ? '<i class="icon-ok"></i> <span>Yes</span>'
+            : '<i class="icon-remove"></i> <span>No</span>';
+
+        newRow.append('<td class="submit ' + (isChecked ? 'active' : '') + '">' + submitHtml + '</td>');
         newRow.append('<td class="remove"><i class="icon-trash"></i></td>');
         
         var hotkey = set.hotkey;
@@ -87,6 +91,12 @@ $(document).ready(function () {
 
     $("#store").click(function () {
         sendMessage({ "action": 'store' }, function readResponse(obj) {
+            if (chrome.runtime.lastError) {
+                $('#error').html('<h6>Error. Something wrong with this page :\'( Try to reload it.</h6>');
+                $('#error').show();
+                return;
+            }
+            
             if (obj == null) {
                 return;
             }
@@ -120,29 +130,35 @@ $(document).ready(function () {
              window.close();
         });
     });
-
+    
     sets.on("click", 'td.submit', function (event) {
         var td = $(this);
         var tr = td.parents('tr');
-        var checkbox = td.find('input[type=checkbox]');
 
-        if (checkbox.is(':checked')) {
-            saveValue(tr, 'autoSubmit', false);
-            checkbox.removeAttr('checked');
-            return;
-        }
+        try {
+            
+            if (td.hasClass('active')) {
+                saveValue(tr, 'autoSubmit', false);
+                td.removeClass('active');
+                return;
+            }
+
+            var oldQuery = getValue(tr, 'submitQuery');
+            oldQuery = oldQuery ? oldQuery : 'input[type=submit]';
+
+            var query = prompt('Enter jquery selector for submit button to auto click', oldQuery);
+            if (query) {
+                saveValue(tr, 'submitQuery', query);
+                saveValue(tr, 'autoSubmit', true);
+                td.addClass('active');
+            } else {
+                td.removeClass('active');
+            }
+            
+        } finally {
+            refreshSetsList();
+        } 
         
-        var oldQuery = getValue(tr, 'submitQuery');
-        oldQuery = oldQuery ? oldQuery : 'input[type=submit]';
-        
-        var query = prompt('Enter jquery selector for submit button to auto click', oldQuery);
-        if (query) {
-            saveValue(tr, 'submitQuery', query);
-            saveValue(tr, 'autoSubmit', true);
-            checkbox.prop('checked', true);
-        } else {
-            checkbox.prop('checked', false);
-        }
     });
 
     sets.on("click", 'td.remove', function (event) {
