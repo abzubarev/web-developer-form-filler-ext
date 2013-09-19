@@ -7,7 +7,7 @@ function getSetsForCurrentUrl(url) {
         var key = localStorage.key(i);
         var settings = JSON.parse(localStorage.getItem(key));
         
-        if (url === settings.url) {
+        if (url.toLowerCase() === settings.url.toLowerCase()) {
             settings.key = key;
             sets.push(settings);
         }
@@ -16,9 +16,9 @@ function getSetsForCurrentUrl(url) {
     return sets;
 }
 
-function refreshSetsList() {
+function refreshSetsList(url) {
     $('#sets tbody tr').remove();
-    var sets = getSetsForCurrentUrl(tab_url);
+    var sets = getSetsForCurrentUrl(url);
 
     for (var i = 0; i < sets.length; i++) {
         var set = sets[i];
@@ -44,6 +44,7 @@ function refreshSetsList() {
     if (numberOfRows == 0) {
         $('#sets').hide();
         $('#nosets').show();
+        $('#nosets_url').text(url);
     } else {
         $('#sets').show();
         $('#nosets').hide();
@@ -71,7 +72,7 @@ function sendMessage(obj, callback) {
 
 chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
     tab_url = tab[0].url.split('?')[0].toLowerCase();
-    refreshSetsList();
+    refreshSetsList(tab_url);
 });
 
 $(document).ready(function () {
@@ -86,7 +87,7 @@ $(document).ready(function () {
             localStorage.removeItem(sets[i].key);
         }
 
-        refreshSetsList();
+        refreshSetsList(tab_url);
     });
 
     $("#store").click(function () {
@@ -107,16 +108,16 @@ $(document).ready(function () {
             }
 
             var setSettings = {
-                content: obj.content,
+				url: tab_url,
                 autoSubmit: false,
                 submitQuery: '',
-                url: tab_url,
+                content: obj.content,
                 name: key,
                 hotkey: ''
             };
 
             localStorage.setItem(key, JSON.stringify(setSettings));
-            refreshSetsList();
+            refreshSetsList(tab_url);
         });
     });
 
@@ -156,7 +157,7 @@ $(document).ready(function () {
             }
             
         } finally {
-            refreshSetsList();
+            refreshSetsList(tab_url);
         } 
         
     });
@@ -167,7 +168,7 @@ $(document).ready(function () {
         
         if (confirm("Are you sure?")) {
             localStorage.removeItem(key);
-            refreshSetsList();
+            refreshSetsList(tab_url);
         }
     });
 
@@ -233,7 +234,7 @@ $(document).ready(function () {
         var tr = $('#sets td.hotkey.active').parents('tr');
         var hotkey = $('#hotkeyBlock #txtHotkey').val();
         saveValue(tr, 'hotkey', hotkey);
-        refreshSetsList();
+        refreshSetsList(tab_url);
         sendMessage({ "action": 'rebind' }, function(response) { });
     });
     

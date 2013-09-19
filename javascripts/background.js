@@ -5,7 +5,7 @@ function getSetsForCurrentUrl(url) {
         var key = localStorage.key(i);
         var settings = JSON.parse(localStorage.getItem(key));
 
-        if (url === settings.url) {
+        if (url === settings.url.toLowerCase()) {
             settings.key = key;
             sets.push(settings);
         }
@@ -31,7 +31,7 @@ function getHotkeys(url) {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
-        var url = tab[0].url.split('?')[0];
+        var url = tab[0].url.split('?')[0].toLowerCase();
         var hotkeys = getHotkeys(url);
 
         switch (request.action) {

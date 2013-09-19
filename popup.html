@@ -15,7 +15,7 @@
         table#sets td.remove { width: 45px; }
         table#sets tbody tr { cursor: pointer; }
         table#sets thead tr { cursor: default; }
-        table#sets td { text-align: center;vertical-align: middle; }
+        table#sets td, table#sets th { text-align: center;vertical-align: middle; }
         table#sets td.setName { min-width: 100px; }
         table#sets td, table#sets th { -webkit-user-select: none; }
         table#sets tbody td:hover {background-color: #D5EBFF;}
@@ -45,7 +45,7 @@
         </div>
 
         <div class="text-center" id="nosets" style="display: none;">
-            <h6>No saved sets</h6>
+            <h6>No saved sets for URL: </h6><h6 id="nosets_url"></h6>
         </div>
 
         <table id="sets" class="table">
