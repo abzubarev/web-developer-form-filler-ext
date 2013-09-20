@@ -57,16 +57,19 @@ function refreshSetsList(url) {
     if (sets.length) {
         $('#sets').show();
         $('#nosets').hide();
+        $('#clearall').removeClass('disabled');
     } else {
         $('#sets').hide();
         $('#nosets').show();
         $('#nosets_url').text(url);
+        $('#clearall').addClass('disabled');
         return;
     }
     
     renderSets(sets);
     
     if (table.hasClass('allsets')) {
+        $('#clearall').addClass('disabled');
         renderAdditionalInfo(sets);
     } 
 }
@@ -144,6 +147,10 @@ $(document).ready(function () {
     });
 
     $("#clearall").click(function () {
+        if ($(this).hasClass("disabled")) {
+            return;
+        }
+
         var sets = getSetsForCurrentUrl(tab_url);
         
         for (var i = 0; i < sets.length; i++) {
