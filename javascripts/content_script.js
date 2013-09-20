@@ -26,20 +26,17 @@ $.fn.serializeForm = function () {
             }
             else {
                 //Ignore ASP.NET Crap
-                if (!name.match(/__.+/)) {
-                    //Do we already have a value for this?
-                    if (formparams[name] === undefined) {
-                        //Add it to our list, encodeURI for TextAreas
-                        if (type == "textarea") {
-                            //encodeURI for TextAreas
-                            formparams[name] = value;
-                        } else {
-                            formparams[name] = value;
-                        }
-                    } else {
-                        //Append it, encodeURI for anything we have to append.
-                        formparams[name] += "," + value;
-                    }
+                if (!name)
+                    return;
+
+                if (name.match(/__.+/))
+                    return;
+
+                //Do we already have a value for this?
+                if (formparams[name] === undefined) {
+                    formparams[name] = value;
+                } else {
+                    formparams[name] += "," + value;
                 }
             }
         });
@@ -55,8 +52,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     switch (request.action) {
         case 'store':
-            var inputs = $('body').serializeForm();
-            sendResponse({ content: JSON.stringify(inputs) });
+            try {
+                var inputs = $('body').serializeForm();
+                sendResponse({ content: JSON.stringify(inputs) });
+            } catch(e) {
+                sendResponse({ error: true, message: e.message });
+            } 
             break;
 
         case 'fill':

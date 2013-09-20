@@ -16,16 +16,68 @@ function getSetsForCurrentUrl(url) {
     return sets;
 }
 
-function refreshSetsList(url) {
-    $('#sets tbody tr').remove();
-    var sets = getSetsForCurrentUrl(url);
+function getAllSets() {
+    var sets = [];
 
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        var settings = JSON.parse(localStorage.getItem(key));
+        settings.key = key;
+        sets.push(settings);
+    }
+
+    return sets;
+}
+
+function sortBy(property) {
+    var sortOrder = 1;
+    if (property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+    return function (a, b) {
+        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        return result * sortOrder;
+    }
+}
+
+function refreshSetsList(url) {
+    var table = $('#sets');
+    var sets;
+    
+    table.find('tbody tr').remove();
+    
+    if (table.hasClass('allsets')) {
+        sets = getAllSets();
+        sets.sort(sortBy('url'));
+    } else {
+        sets = getSetsForCurrentUrl(url);
+    }
+
+    if (sets.length) {
+        $('#sets').show();
+        $('#nosets').hide();
+    } else {
+        $('#sets').hide();
+        $('#nosets').show();
+        $('#nosets_url').text(url);
+        return;
+    }
+    
+    renderSets(sets);
+    
+    if (table.hasClass('allsets')) {
+        renderAdditionalInfo(sets);
+    } 
+}
+
+function renderSets(sets) {
     for (var i = 0; i < sets.length; i++) {
         var set = sets[i];
         var newRow = $('<tr data-key="' + set.key + '"></tr>');
         newRow.append('<td class="restore"><i class="icon-arrow-up"></i> Restore</td>');
         newRow.append('<td class="setName">' + set.name + '</td>');
-        
+
         var isChecked = set.autoSubmit ? "checked" : "";
         var submitHtml = isChecked
             ? '<i class="icon-ok"></i> <span>Yes</span>'
@@ -33,21 +85,27 @@ function refreshSetsList(url) {
 
         newRow.append('<td class="submit ' + (isChecked ? 'active' : '') + '">' + submitHtml + '</td>');
         newRow.append('<td class="remove"><i class="icon-trash"></i></td>');
-        
+
         var hotkey = set.hotkey;
         newRow.append('<td class="hotkey">' + (hotkey ? hotkey : 'none') + '</a></td>');
 
         $('#sets').append(newRow);
     }
-    
-    var numberOfRows = $('#sets tbody tr').length;
-    if (numberOfRows == 0) {
-        $('#sets').hide();
-        $('#nosets').show();
-        $('#nosets_url').text(url);
-    } else {
-        $('#sets').show();
-        $('#nosets').hide();
+}
+
+function renderAdditionalInfo(sets) {
+    var table = $('#sets');
+
+    if (!table.find('th.url').length) {
+        table.find('thead tr').append('<th class="url">URL</th>');
+    }
+
+    for (var i = 0; i < sets.length; i++) {
+        var set = sets[i];
+        var row = table.find('tr[data-key=' + set.key + ']');
+        var substrHref = set.url.length > 40 ? set.url.substring(0, 50) + '...' : set.url;
+        row.append('<td class="url"><a target="_blank" href="' + set.url + '">' + substrHref + '</a></td>');
+        row.find('td.restore').addClass('disabled').find('i').remove();
     }
 }
 
@@ -79,6 +137,11 @@ $(document).ready(function () {
     $("#check").click(function () {
         
     });
+    
+    $("#viewSets").click(function () {
+        $('#sets').addClass('allsets');
+        refreshSetsList();
+    });
 
     $("#clearall").click(function () {
         var sets = getSetsForCurrentUrl(tab_url);
@@ -92,14 +155,21 @@ $(document).ready(function () {
 
     $("#store").click(function () {
         sendMessage({ "action": 'store' }, function readResponse(obj) {
-            if (chrome.runtime.lastError) {
-                $('#error').html('<h6>Error. Something wrong with this page :\'( Try to reload it.</h6>');
-                $('#error').show();
+            var error = $('#error');
+            if (!obj || chrome.runtime.lastError || obj.error) {
+
+                if (chrome.runtime.lastError) {
+                    error.html('<h6>Error :( Something wrong with current tab. Try to reload it.</h6>');
+                } else if (!obj) {
+                    error.html('<h6>Error :( Null response from content script</h6>');
+                } else if (obj.error) {
+                    error.html('<h6>Error :\'( ' + obj.message + '</h6>');
+                }
+
+                error.show();
                 return;
-            }
-            
-            if (obj == null) {
-                return;
+            } else {
+                error.hide();
             }
 
             var key = Math.floor((Math.random() * 1000000000) + 1);
@@ -123,7 +193,7 @@ $(document).ready(function () {
 
     var sets = $('#sets');
 
-    sets.on("click", 'td.restore', function (event) {
+    sets.on("click", 'td.restore:not(.disabled)', function (event) {
         var key = $(this).parents('tr').data('key');
         var setSettings = JSON.parse(localStorage.getItem(key));
 
