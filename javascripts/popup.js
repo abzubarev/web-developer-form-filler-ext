@@ -106,7 +106,7 @@ function renderAdditionalInfo(sets) {
     for (var i = 0; i < sets.length; i++) {
         var set = sets[i];
         var row = table.find('tr[data-key=' + set.key + ']');
-        var substrHref = set.url.length > 40 ? set.url.substring(0, 50) + '...' : set.url;
+        var substrHref = set.url.length > 40 ? set.url.substring(0, 40) + '...' : set.url;
         row.append('<td class="url"><a target="_blank" href="' + set.url + '">' + substrHref + '</a></td>');
         row.find('td.restore').addClass('disabled').find('i').remove();
     }

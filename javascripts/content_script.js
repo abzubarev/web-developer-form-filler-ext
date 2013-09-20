@@ -46,7 +46,7 @@ $.fn.serializeForm = function () {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (typeof (localStorage) == 'undefined') {
-        alert("Your browser does not support HTML5 local storage feature. This extension will not work without this feature.");
+        alert("WebFormFiller: Your browser does not support HTML5 local storage feature. This extension will not work without this feature.");
         return;
     }
 
@@ -74,10 +74,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 bindHotkeys();
 
 function bindHotkeys() {
-    chrome.runtime.sendMessage({ "action": "gethotkeys" }, function (hotkeys) {
+    chrome.runtime.sendMessage({ "action": "gethotkeys", url: location.href }, function (hotkeys) {
+        console.debug('Bind hotkeys ' + hotkeys);
+        
         Mousetrap.reset();
         Mousetrap.bind(hotkeys, function (e, code) {
-            chrome.runtime.sendMessage({ "action": "hotkey", code: code }, function (setSettings) {
+            chrome.runtime.sendMessage({ "action": "hotkey", code: code, url: location.href }, function (setSettings) {
                 if (!setSettings) {
                     alert('Hotkey not found');
                 }

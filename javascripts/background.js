@@ -30,25 +30,23 @@ function getHotkeys(url) {
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
-        var url = tab[0].url.split('?')[0].toLowerCase();
-        var hotkeys = getHotkeys(url);
+    var url = request.url.split('?')[0].toLowerCase();
+    var hotkeys = getHotkeys(url);
 
-        switch (request.action) {
-            case 'gethotkeys':
-                sendResponse(hotkeys);
-                break;
+    switch (request.action) {
+        case 'gethotkeys':
+            sendResponse(hotkeys);
+            break;
 
-            case 'hotkey':
-                var sets = getSetsForCurrentUrl(url);
-                for (var i = 0; i < sets.length; i++) {
-                    if (sets[i].hotkey == request.code) {
-                        sendResponse(sets[i]);
-                    }
+        case 'hotkey':
+            var sets = getSetsForCurrentUrl(url);
+            for (var i = 0; i < sets.length; i++) {
+                if (sets[i].hotkey == request.code) {
+                    sendResponse(sets[i]);
                 }
-                break;
-        }
-    });
+            }
+            break;
+    }
 
     return true;
 });
