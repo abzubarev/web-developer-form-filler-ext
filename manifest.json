@@ -1,6 +1,10 @@
 {
 	"content_scripts" : [ {
-				"js" : ["javascripts/jquery-1.9.1.min.js", "javascripts/jquery.nmx.deserialize-0.1.js", "javascripts/content_script.js", "javascripts/mousetrap.min.js" ],
+				"js" : [
+					"javascripts/jquery-1.9.1.min.js", 
+					"javascripts/jquery.nmx.deserialize-0.1.js", 
+					"javascripts/content_script.js", 
+					"javascripts/mousetrap.min.js" ],
 				"matches" : [ "http://*/*", "https://*/*" ],
 				"run_at" : "document_start"
 				} ],
@@ -17,7 +21,7 @@
 		"default_popup": "popup.html"
 	},
 	"background": {
-		"scripts": ["javascripts/background.js"]
+		"page": "background.html"
 	},
 	"permissions": [
 		"tabs",

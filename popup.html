@@ -4,6 +4,8 @@
     <title></title>
     <link href="bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
     <script type="text/javascript" src="javascripts/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="javascripts/parseuri.js"></script>
+    <script type="text/javascript" src="javascripts/utils.js"></script>
     <script type="text/javascript" src="javascripts/popup.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 
@@ -24,7 +26,7 @@
         table#sets button { margin-top: -3px; }
         table#sets input.txtSetName { margin-top: 0;margin-bottom: 0;height: 15px;width: 90px; }
         table#sets input[type=checkbox] { margin-top: -3px; }
-        .dropdown-menu { left: 34%; text-align: left }
+        .dropdown-menu { left: 38%; text-align: left }
     </style>
 </head>
     <body>
@@ -42,13 +44,17 @@
             <ul class="dropdown-menu">
                 <li><a href="#" id="viewSets">View all saved sets</a></li>
                 <li class="divider"></li>
+                <li><a href="#" class="filter" id="domain">Filter by domain</a></li>
+                <li><a href="#" class="filter" id="path">Filter by path</a></li>
+                <li><a href="#" class="filter" id="full">Filter by full URL</a></li>
+                <li class="divider"></li>
                 <li><a href="https://chrome.google.com/webstore/support/gbagmkohmhcjgbepncmehejaljoclpil?hl=ru&gl=ID#bug" target="_blank">Report a problem</a></li>
                 <li><a href="http://github.com/abzubarev/web-developer-form-filler-ext" target="_blank">Sources on GitHub</a></li>
             </ul>
         </div>
 
         <div class="text-center" id="nosets" style="display: none;">
-            <h6>No saved sets for URL: </h6><h6 id="nosets_url"></h6>
+            <h6>No saved sets for this URL (check filter)</h6><h6 id="nosets_url"></h6>
         </div>
 
         <table id="sets" class="table">

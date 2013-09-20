@@ -1,19 +1,3 @@
-function getSetsForCurrentUrl(url) {
-    var sets = [];
-
-    for (var i = 0; i < localStorage.length; i++) {
-        var key = localStorage.key(i);
-        var settings = JSON.parse(localStorage.getItem(key));
-
-        if (url === settings.url.toLowerCase()) {
-            settings.key = key;
-            sets.push(settings);
-        }
-    }
-
-    return sets;
-}
-
 function getHotkeys(url) {
     var sets = getSetsForCurrentUrl(url);
     var hotkeys = [];
@@ -30,8 +14,7 @@ function getHotkeys(url) {
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    var url = request.url.split('?')[0].toLowerCase();
-    var hotkeys = getHotkeys(url);
+    var hotkeys = getHotkeys(request.url);
 
     switch (request.action) {
         case 'gethotkeys':
@@ -39,7 +22,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
 
         case 'hotkey':
-            var sets = getSetsForCurrentUrl(url);
+            var sets = getSetsForCurrentUrl(request.url);
             for (var i = 0; i < sets.length; i++) {
                 if (sets[i].hotkey == request.code) {
                     sendResponse(sets[i]);

@@ -1,26 +1,14 @@
 var tab_url;
 
-function getSetsForCurrentUrl(url) {
-    var sets = [];
-    
-    for (var i = 0; i < localStorage.length; i++) {
-        var key = localStorage.key(i);
-        var settings = JSON.parse(localStorage.getItem(key));
-        
-        if (url.toLowerCase() === settings.url.toLowerCase()) {
-            settings.key = key;
-            sets.push(settings);
-        }
-    }
-
-    return sets;
-}
-
 function getAllSets() {
     var sets = [];
 
     for (var i = 0; i < localStorage.length; i++) {
         var key = localStorage.key(i);
+        if (key == 'filter') {
+            continue;
+        }
+        
         var settings = JSON.parse(localStorage.getItem(key));
         settings.key = key;
         sets.push(settings);
@@ -61,7 +49,7 @@ function refreshSetsList(url) {
     } else {
         $('#sets').hide();
         $('#nosets').show();
-        $('#nosets_url').text(url);
+        //$('#nosets_url').text(url);
         $('#clearall').addClass('disabled');
         return;
     }
@@ -131,12 +119,26 @@ function sendMessage(obj, callback) {
     });
 }
 
+function setCurrentFilter() {
+    var value = localStorage.getItem('filter');
+    
+    if (!value) {
+        localStorage.setItem('filter', FILTER_BY_FULL);
+        value = FILTER_BY_FULL;
+    }
+
+    var link = $('a.filter[id=' + value + ']');
+    link.prepend('<i class="icon-ok"></i> ');
+}
+
 chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
-    tab_url = tab[0].url.split('?')[0].toLowerCase();
+    tab_url = tab[0].url;
     refreshSetsList(tab_url);
 });
 
 $(document).ready(function () {
+    setCurrentFilter();
+    
     $("#check").click(function () {
         
     });
@@ -317,6 +319,17 @@ $(document).ready(function () {
     
     $('#btnHotkeyCancel').click(function () {
         $('#hotkeyBlock').hide();
+    });
+    
+    $('a.filter').click(function () {
+        var link = $(this);
+        var value = link.attr('id');
+        $('a.filter').not(link).find('i').remove();
+
+        localStorage.setItem('filter', value);
+        link.prepend('<i class="icon-ok"></i> ');
+
+        refreshSetsList(tab_url);
     });
 
     sets
