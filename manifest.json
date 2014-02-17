@@ -2,14 +2,14 @@
 	"content_scripts" : [ {
 				"js" : [
 					"javascripts/jquery-1.9.1.min.js", 
-					"javascripts/jquery.nmx.deserialize-0.1.js", 
+					"javascripts/deserialize.js", 
 					"javascripts/content_script.js", 
 					"javascripts/mousetrap.min.js" ],
 				"matches" : [ "http://*/*", "https://*/*" ],
 				"run_at" : "document_start"
 				} ],
 	"name": "Web Developer Form Filler",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"icons" : { 
 			"16" :  "images/16.png",
 		    "48" :  "images/48.png",

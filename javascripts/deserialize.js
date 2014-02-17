@@ -1,9 +1,3 @@
-/*globals jQuery */
-/**
- * @return         jQuery object
- * @author         Thomas Junghans (thomas.junghans@namics.com)
- * @version        0.1
- */
 
 (function ($) {
     $.fn.extend({
@@ -31,12 +25,18 @@
                 }
             }
 
-
-            $self.find('input, select, textarea').each(function (index) {
+            $self.find(":input").not('button, input[type=image], input[type=submit], input[type=hidden], input[type=button]')
+			.each(function (index) {
                 $current = $(this);
                 currentDom = $current.get(0);
+				
+				if (!$current.attr("id") && !$current.attr("name")){
+					return true;
+				}	
+				
                 var name = $current.attr("id");
-                name = "" != name ? name : $current.attr("name");
+                name = (name) ? name : $current.attr("name");
+				
                 $currentSavedValue = keyValPairObject[name];
 
                 if (currentDom.disabled === true) {

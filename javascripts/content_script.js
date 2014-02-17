@@ -5,6 +5,11 @@ $.fn.serializeForm = function () {
         $(":input", this).not('button, input[type=image], input[type=submit], input[type=hidden], input[type=button]').each(function () {
 
             var input = $(this);
+			
+			if (!input.attr("id") && !input.attr("name")){
+				return true;
+			}			
+
             var name = input.attr("id");
             name = (name) ? name : input.attr("name"); //If the ID isn't valid, use the name attribute
             var value = input.val();
