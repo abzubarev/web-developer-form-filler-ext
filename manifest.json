@@ -9,7 +9,7 @@
 				"run_at" : "document_start"
 				} ],
 	"name": "Web Developer Form Filler",
-	"version": "1.0.7",
+	"version": "1.0.7.1",
 	"icons" : { 
 			"16" :  "images/16.png",
 		    "48" :  "images/48.png",

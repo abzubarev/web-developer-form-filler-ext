@@ -139,6 +139,10 @@ chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
 $(document).ready(function () {
     setCurrentFilter();
     
+	$('#donatelink').click(function () {
+		$('#donate').toggle();
+	});
+	
     $("#check").click(function () {
         
     });
