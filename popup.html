@@ -27,6 +27,7 @@
         table#sets input.txtSetName { margin-top: 0;margin-bottom: 0;height: 15px;width: 90px; }
         table#sets input[type=checkbox] { margin-top: -3px; }
         .dropdown-menu { left: 38%; text-align: left }
+        #txtFormJson { height: 90px; width: 500px; }
     </style>
 
 </head>
@@ -47,6 +48,7 @@
         <div class="btn-group">
             <!--<button type="button" id="check" class="btn"><i class="icon-eye-open"></i></button>-->
             <button type="button" id="store" class="btn"><i class="icon-arrow-down"></i> Save form</button>
+            <button type="button" id="import" title="Import JSON of a saved form" class="btn"><i class="icon-plus"></i></button>
             <button type="button" title="Clear all sets for current URL" id="clearall" class="btn"><i class="icon-trash"></i> Clear Sets</button>
             <button class="btn dropdown-toggle" data-toggle="dropdown" tabindex="-1">
                 <i class="icon-cog"></i> <span class="caret"></span>
@@ -75,6 +77,7 @@
                     <th>Set Name</th>
                     <th>SubmitForm</th>
                     <th></th>
+                    <th>Export</th>
                     <th>Hotkey</th>
                 </tr>
             </thead>
@@ -82,7 +85,7 @@
             </tbody>
         </table>
 
-        <div id="hotkeyBlock" style="display: none">
+        <div id="hotkeyBlock" class="block" style="display: none">
             <h4 id="hHotkey">Type your hotkey</h4>
             <div class="form-inline text-left ">
                 <p>For modifier keys you can use <code>shift</code>, <code>ctrl</code>, <code>alt</code>, <code>option</code>, <code>meta</code>, and <code>command</code>.</p>
@@ -93,6 +96,15 @@
                     <button class="btn" id="btnHotkeySave">Save</button>
                     <button class="btn" id="btnHotkeyCancel">Cancel</button>
                 </div>
+            </div>
+        </div>
+        
+
+        <div id="exportBlock" class="block" style="display: none;">
+            <h4>Save or copy this json to import:</h4>
+            <div class="form-inline text-left ">
+                <textarea id="txtFormJson"></textarea>
+                <button class="btn" id="btnExportClose">Close</button>
             </div>
         </div>
     </body>

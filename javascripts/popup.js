@@ -76,6 +76,7 @@ function renderSets(sets) {
 
         newRow.append('<td class="submit ' + (isChecked ? 'active' : '') + '">' + submitHtml + '</td>');
         newRow.append('<td class="remove"><i class="icon-trash"></i></td>');
+        newRow.append('<td class="export"><i class="icon-share-alt"></i></td>');
 
         var hotkey = set.hotkey;
         newRow.append('<td class="hotkey">' + (hotkey ? hotkey : 'none') + '</a></td>');
@@ -131,6 +132,14 @@ function setCurrentFilter() {
     link.prepend('<i class="icon-ok"></i> ');
 }
 
+function getRandomStorageId() {
+    var key = Math.floor((Math.random() * 1000000000) + 1);
+    if (localStorage.getItem(key)) {
+        return Math.floor((Math.random() * 1000000000) + 1);
+    }
+    return key;
+}
+
 chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
     tab_url = tab[0].url;
     refreshSetsList(tab_url);
@@ -150,6 +159,28 @@ $(document).ready(function () {
     $("#viewSets").click(function () {
         $('#sets').addClass('allsets');
         refreshSetsList();
+    });
+
+    $("#import").click(function () {
+        var json = prompt('Paste saved form JSON');
+        if (json) {
+            try {
+                var savedForm = JSON.parse(json);
+
+                if (!savedForm.url || !savedForm.content || !savedForm.name) {
+                    throw "Invalid JSON format";
+                }
+            }
+            catch (err) {
+                alert('Got an error: ' + err.message);
+                return;
+            }
+
+            var key = getRandomStorageId();
+            localStorage.setItem(key, json);
+
+            refreshSetsList(tab_url);
+        } 
     });
 
     $("#clearall").click(function () {
@@ -185,10 +216,7 @@ $(document).ready(function () {
                 error.hide();
             }
 
-            var key = Math.floor((Math.random() * 1000000000) + 1);
-            if (localStorage.getItem(key)) {
-                key = Math.floor((Math.random() * 1000000000) + 1);
-            }
+            var key = getRandomStorageId();
 
             var setSettings = {
 				url: tab_url,
@@ -205,6 +233,10 @@ $(document).ready(function () {
     });
 
     var sets = $('#sets');
+
+    sets.on("click", 'td', function (event) {
+        $('div.block').hide();
+    });
 
     sets.on("click", 'td.restore:not(.disabled)', function (event) {
         var key = $(this).parents('tr').data('key');
@@ -255,6 +287,25 @@ $(document).ready(function () {
         }
     });
 
+    sets.on("click", 'td.export', function (event) {
+        var exportBlock = $('#exportBlock');
+
+        if (exportBlock.is(':visible')) {
+            exportBlock.hide();
+            return;
+        }
+
+        var td = $(this);
+        var tr = td.parents('tr');
+        var key = tr.data('key');
+        var formJson = localStorage.getItem(key);
+
+        td.addClass('active');
+        exportBlock.show();
+
+        exportBlock.find('#txtFormJson').val(formJson).focus().select();
+    });
+    
     sets.on("click", 'td.hotkey', function (event) {
         var hotkeyBlock = $('#hotkeyBlock');
         
@@ -323,6 +374,10 @@ $(document).ready(function () {
     
     $('#btnHotkeyCancel').click(function () {
         $('#hotkeyBlock').hide();
+    });
+        
+    $('#btnExportClose').click(function () {
+        $('#exportBlock').hide();
     });
     
     $('a.filter').click(function () {
