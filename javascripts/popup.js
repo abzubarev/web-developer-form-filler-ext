@@ -281,10 +281,8 @@ $(document).ready(function () {
         var tr = $(this).parents('tr');
         var key = tr.data('key');
         
-        if (confirm("Are you sure?")) {
-            localStorage.removeItem(key);
-            refreshSetsList(tab_url);
-        }
+        localStorage.removeItem(key);
+		refreshSetsList(tab_url);
     });
 
     sets.on("click", 'td.export', function (event) {
