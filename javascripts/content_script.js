@@ -7,6 +7,7 @@ $.fn.serializeForm = function () {
             var input = $(this);
 			
 			if (!input.attr("id") && !input.attr("name")){
+				console.error('Filler error: an input does not have id or name attribute. Skipping');
 				return true;
 			}			
 

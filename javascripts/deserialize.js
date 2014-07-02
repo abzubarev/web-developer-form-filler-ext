@@ -45,7 +45,7 @@
 
                 if ($current.is('textarea')) {
                     if ($currentSavedValue === undefined) {
-                        $current.val('');
+                        console.error('Value for ' + name + ' not found');
                     } else {
                         $current.val($currentSavedValue);
                     }
@@ -89,9 +89,9 @@
                     return true;
                 }
 
-                if ($current.is('input:text, input:password')) {
+                if ($current.is('input:text, input:password, input[type=email], input[type=number], input[type=search], input[type=tel], input[type=url]')) {
                     if ($currentSavedValue === undefined) {
-                        $current.val('');
+                        console.error('Value for ' + name + ' not found');
                     } else {
                         $current.val($currentSavedValue);
                         return true;

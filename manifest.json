@@ -5,11 +5,11 @@
 					"javascripts/deserialize.js", 
 					"javascripts/content_script.js", 
 					"javascripts/mousetrap.min.js" ],
-				"matches" : [ "http://*/*", "https://*/*" ],
+				"matches" : [ "http://*/*", "https://*/*", "file:///*" ],
 				"run_at" : "document_start"
 				} ],
 	"name": "Web Developer Form Filler",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"icons" : { 
 			"16" :  "images/16.png",
 		    "48" :  "images/48.png",
