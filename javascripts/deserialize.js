@@ -1,5 +1,12 @@
 
 (function ($) {
+    // Jquery event doesn't work in chrome extension...
+    function triggerNativeEvent(elem, eventName) {
+        var evt = document.createEvent("HTMLEvents");
+        evt.initEvent(eventName, true, true);
+        elem[0].dispatchEvent(evt);
+    }
+
     $.fn.extend({
         deserialize: function (d, config) {
             var currentDom,
@@ -49,7 +56,7 @@
                     } else {
                         $current.val($currentSavedValue);
                     }
-                    $current.change();
+                    triggerNativeEvent($current, 'change');
                     return true;
                 }
 
@@ -58,7 +65,7 @@
                         return true;
                     } else {
                         $current.val($currentSavedValue);
-                        $current.change();
+                        triggerNativeEvent($current, 'change');
                     }
                     return true;
                 }
@@ -84,7 +91,7 @@
                         } else {
                             $(this).attr('checked', false);
                         }
-                        $(this).change();
+                        triggerNativeEvent($current, 'change');
                     }
                     return true;
                 }
@@ -94,10 +101,9 @@
                         $current.val('');
                     } else {
                         $current.val($currentSavedValue);
-                        return true;
                     }
-                    $current.change();
-
+                    triggerNativeEvent($current, 'change');
+                    return true;
                 }
 
             });

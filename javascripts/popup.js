@@ -75,7 +75,17 @@ function renderSets(sets) {
             : '<i class="icon-remove"></i> <span>No</span>';
 
         newRow.append('<td class="submit ' + (isChecked ? 'active' : '') + '">' + submitHtml + '</td>');
-        newRow.append('<td class="remove"><i class="icon-trash"></i></td>');
+        var removeButton = $('<td class="remove"><i class="icon-trash"></i></td>');
+        removeButton.confirmation({
+            singleton: true,
+            onConfirm: function(result) {
+                if (result) {
+                    localStorage.removeItem(set.key);
+                    refreshSetsList(tab_url);
+                }
+            }
+        });
+        newRow.append(removeButton);
         newRow.append('<td class="export"><i class="icon-share-alt"></i></td>');
 
         var hotkey = set.hotkey;
@@ -275,16 +285,6 @@ $(document).ready(function () {
             refreshSetsList(tab_url);
         } 
         
-    });
-
-    sets.on("click", 'td.remove', function (event) {
-        var tr = $(this).parents('tr');
-        var key = tr.data('key');
-        
-        if (confirm("Are you sure?")) {
-            localStorage.removeItem(key);
-            refreshSetsList(tab_url);
-        }
     });
 
     sets.on("click", 'td.export', function (event) {
