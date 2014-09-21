@@ -162,25 +162,41 @@ $(document).ready(function () {
     });
 
     $("#import").click(function () {
-        var json = prompt('Paste saved form JSON');
-        if (json) {
-            try {
-                var savedForm = JSON.parse(json);
+		var importBlock = $('#importBlock');
 
-                if (!savedForm.url || !savedForm.content || !savedForm.name) {
-                    throw "Invalid JSON format";
-                }
-            }
-            catch (err) {
-                alert('Got an error: ' + err.message);
-                return;
-            }
+        if (importBlock.is(':visible')) {
+            importBlock.hide();
+            return;
+        }
 
-            var key = getRandomStorageId();
-            localStorage.setItem(key, json);
+        importBlock.show();
+		importBlock.find('#txtImportFormJson').focus();
+    });
+	
+    $("#btnImportSave").click(function () {
+		var json = $('#txtImportFormJson').val();
 
-            refreshSetsList(tab_url);
-        } 
+		try {
+			var importedForm = JSON.parse(json);
+
+			if (!importedForm.url || !importedForm.content || !importedForm.name) {
+				throw "Invalid JSON format";
+			}
+			
+			if (importedForm.url === '*'){
+				importedForm.name += '-global';
+			}
+			
+			var key = getRandomStorageId();
+			localStorage.setItem(key, JSON.stringify(importedForm));
+
+		}
+		catch (err) {
+			alert('Got an error: ' + err.message);
+		}
+		
+		refreshSetsList(tab_url);
+		$('#importBlock').hide();
     });
 
     $("#clearall").click(function () {
@@ -376,6 +392,10 @@ $(document).ready(function () {
         
     $('#btnExportClose').click(function () {
         $('#exportBlock').hide();
+    });
+    
+    $('#btnImportClose').click(function () {
+        $('#importBlock').hide();
     });
     
     $('a.filter').click(function () {

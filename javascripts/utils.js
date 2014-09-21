@@ -10,8 +10,11 @@ function fits(current, storage) {
 
     var url1 = parseUri(current);
     var url2 = parseUri(storage);
-
-    if (value === FILTER_BY_DOMAIN) {
+	
+    if (storage === '*') {
+        return true;
+		
+    } else if (value === FILTER_BY_DOMAIN) {
         return url1.host === url2.host;
 
     } else if (value === FILTER_BY_PATH) {
