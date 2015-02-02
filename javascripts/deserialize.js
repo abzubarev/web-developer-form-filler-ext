@@ -57,6 +57,7 @@
                         $current.val($currentSavedValue);
                     }
                     triggerNativeEvent($current, 'change');
+                    triggerNativeEvent($current, 'blur');
                     return true;
                 }
 
@@ -66,6 +67,7 @@
                     } else {
                         $current.val($currentSavedValue);
                         triggerNativeEvent($current, 'change');
+                        triggerNativeEvent($current, 'blur');
                     }
                     return true;
                 }
@@ -92,6 +94,7 @@
                             $(this).attr('checked', false);
                         }
                         triggerNativeEvent($current, 'change');
+                        triggerNativeEvent($current, 'blur');
                     }
                     return true;
                 }
@@ -103,6 +106,7 @@
                         $current.val($currentSavedValue);
                     }
                     triggerNativeEvent($current, 'change');
+                    triggerNativeEvent($current, 'blur');
                     return true;
                 }
 
