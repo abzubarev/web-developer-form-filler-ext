@@ -180,7 +180,7 @@ $(document).ready(function () {
 			var importedForm = JSON.parse(json);
 
 			if (!importedForm.url || !importedForm.content || !importedForm.name) {
-				throw "Invalid JSON format";
+				throw new Error("Invalid JSON format");
 			}
 			
 			if (importedForm.url === '*'){
