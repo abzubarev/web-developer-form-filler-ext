@@ -81,8 +81,6 @@ bindHotkeys();
 
 function bindHotkeys() {
     chrome.runtime.sendMessage({ "action": "gethotkeys", url: location.href }, function (hotkeys) {
-        console.debug('Bind hotkeys ' + hotkeys);
-        
         Mousetrap.reset();
         Mousetrap.bind(hotkeys, function (e, code) {
             chrome.runtime.sendMessage({ "action": "hotkey", code: code, url: location.href }, function (setSettings) {
