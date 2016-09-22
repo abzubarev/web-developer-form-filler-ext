@@ -105,6 +105,7 @@
                     } else {
                         $current.val($currentSavedValue);
                     }
+                    triggerNativeEvent($current, 'input');
                     triggerNativeEvent($current, 'change');
                     triggerNativeEvent($current, 'blur');
                     return true;
