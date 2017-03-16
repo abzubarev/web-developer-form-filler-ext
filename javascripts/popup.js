@@ -40,6 +40,7 @@ function refreshSetsList(url) {
         sets.sort(sortBy('url'));
     } else {
         sets = getSetsForCurrentUrl(url);
+        sets.sort(sortBy('name'));
     }
 
     if (sets.length) {
