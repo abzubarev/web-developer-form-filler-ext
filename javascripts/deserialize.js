@@ -89,9 +89,9 @@
                 if ($current.is('input:checkbox')) {
                     if ($currentSavedValue !== undefined) {
                         if (($current.val() === $currentSavedValue) || ($currentSavedValue === "true")) {
-                            $(this).attr('checked', true);
+                            $(this).prop('checked', true);
                         } else {
-                            $(this).attr('checked', false);
+                            $(this).prop('checked', false);
                         }
                         triggerNativeEvent($current, 'change');
                         triggerNativeEvent($current, 'blur');
