@@ -141,14 +141,6 @@ function getRandomStorageId() {
     return key;
 }
 
-function validateImportedItems(items) {
-    items.forEach(item => {
-        if (!item.url || !item.content || !item.name) {
-            throw new Error("Invalid JSON format");
-        }
-    })
-}
-
 chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
     tab_url = tab[0].url;
     refreshSetsList(tab_url);
@@ -188,20 +180,17 @@ $(document).ready(function () {
         try {
             var importedForm = JSON.parse(json);
 
-            if (!Array.isArray(importedForm)) {
-                importedForm = [importedForm]
+            if (!importedForm.url || !importedForm.content || !importedForm.name) {
+                throw new Error("Invalid JSON format");
             }
+            
+            if (importedForm.url === '*'){
+                importedForm.name += '-global';
+            }
+            
+            var key = getRandomStorageId();
+            localStorage.setItem(key, JSON.stringify(importedForm));
 
-            validateImportedItems(importedForm)
-
-            importedForm.forEach(item => {
-                if (item.url === '*') {
-                    item.name += '-global';
-                }
-
-                var key = getRandomStorageId();
-                localStorage.setItem(key, JSON.stringify(item));
-            })
         }
         catch (err) {
             alert('Got an error: ' + err.message);
