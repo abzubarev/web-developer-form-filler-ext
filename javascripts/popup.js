@@ -146,6 +146,14 @@ chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
     refreshSetsList(tab_url);
 });
 
+function validateImportedItems(items) {
+    items.forEach(item => {
+        if (!item.url || !item.content || !item.name) {
+            throw new Error("Invalid JSON format");
+        }
+    })
+}
+
 $(document).ready(function () {
     setCurrentFilter();
 
@@ -180,16 +188,20 @@ $(document).ready(function () {
         try {
             var importedForm = JSON.parse(json);
 
-            if (!importedForm.url || !importedForm.content || !importedForm.name) {
-                throw new Error("Invalid JSON format");
+            if (!Array.isArray(importedForm)) {
+                importedForm = [importedForm]
             }
 
-            if (importedForm.url === '*'){
-                importedForm.name += '-global';
-            }
+            validateImportedItems(importedForm)
 
-            var key = getRandomStorageId();
-            localStorage.setItem(key, JSON.stringify(importedForm));
+            importedForm.forEach(item => {
+                if (item.url === '*') {
+                    item.name += '-global';
+                }
+
+                var key = getRandomStorageId();
+                localStorage.setItem(key, JSON.stringify(item));
+            })
 
         }
         catch (err) {
