@@ -8,7 +8,7 @@ function getAllSets() {
         if (key == 'filter') {
             continue;
         }
-        
+
         var settings = JSON.parse(localStorage.getItem(key));
         settings.key = key;
         sets.push(settings);
@@ -32,9 +32,9 @@ function sortBy(property) {
 function refreshSetsList(url) {
     var table = $('#sets');
     var sets;
-    
+
     table.find('tbody tr').remove();
-    
+
     if (table.hasClass('allsets')) {
         sets = getAllSets();
         sets.sort(sortBy('url'));
@@ -54,13 +54,13 @@ function refreshSetsList(url) {
         $('#clearall').addClass('disabled');
         return;
     }
-    
+
     renderSets(sets);
-    
+
     if (table.hasClass('allsets')) {
         $('#clearall').addClass('disabled');
         renderAdditionalInfo(sets);
-    } 
+    }
 }
 
 function renderSets(sets) {
@@ -116,14 +116,14 @@ function getValue(tr, property) {
 }
 
 function sendMessage(obj, callback) {
-    chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
+    chrome.tabs.query({'active': true, 'currentWindow': true}, function (tab) {
         chrome.tabs.sendMessage(tab[0].id, obj, callback);
     });
 }
 
 function setCurrentFilter() {
     var value = localStorage.getItem('filter');
-    
+
     if (!value) {
         localStorage.setItem('filter', FILTER_BY_FULL);
         value = FILTER_BY_FULL;
@@ -141,29 +141,37 @@ function getRandomStorageId() {
     return key;
 }
 
-chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
+function validateImportedItems(items) {
+    items.forEach(item => {
+        if (!item.url || !item.content || !item.name) {
+            throw new Error("Invalid JSON format");
+        }
+    })
+}
+
+chrome.tabs.query({'active': true, 'currentWindow': true}, function (tab) {
     tab_url = tab[0].url;
     refreshSetsList(tab_url);
 });
 
 $(document).ready(function () {
     setCurrentFilter();
-    
-	$('.donatelink').click(function () {
-		$('#donate').toggle();
-	});
-	
-    $("#check").click(function () {
-        
+
+    $('.donatelink').click(function () {
+        $('#donate').toggle();
     });
-    
+
+    $("#check").click(function () {
+
+    });
+
     $("#viewSets").click(function () {
         $('#sets').addClass('allsets');
         refreshSetsList();
     });
 
     $("#import").click(function () {
-		var importBlock = $('#importBlock');
+        var importBlock = $('#importBlock');
 
         if (importBlock.is(':visible')) {
             importBlock.hide();
@@ -171,33 +179,35 @@ $(document).ready(function () {
         }
 
         importBlock.show();
-		importBlock.find('#txtImportFormJson').focus();
+        importBlock.find('#txtImportFormJson').focus();
     });
-	
+
     $("#btnImportSave").click(function () {
-		var json = $('#txtImportFormJson').val();
+        var json = $('#txtImportFormJson').val();
 
-		try {
-			var importedForm = JSON.parse(json);
+        try {
+            var importedForm = JSON.parse(json);
 
-			if (!importedForm.url || !importedForm.content || !importedForm.name) {
-				throw new Error("Invalid JSON format");
-			}
-			
-			if (importedForm.url === '*'){
-				importedForm.name += '-global';
-			}
-			
-			var key = getRandomStorageId();
-			localStorage.setItem(key, JSON.stringify(importedForm));
+            if (!Array.isArray(importedForm)) {
+                importedForm = [importedForm]
+            }
 
-		}
-		catch (err) {
-			alert('Got an error: ' + err.message);
-		}
-		
-		refreshSetsList(tab_url);
-		$('#importBlock').hide();
+            validateImportedItems(importedForm)
+
+            importedForm.forEach(item => {
+                if (item.url === '*') {
+                    item.name += '-global';
+                }
+
+                var key = getRandomStorageId();
+                localStorage.setItem(key, JSON.stringify(item));
+            })
+        } catch (err) {
+            alert('Got an error: ' + err.message);
+        }
+
+        refreshSetsList(tab_url);
+        $('#importBlock').hide();
     });
 
     $("#clearall").click(function () {
@@ -206,7 +216,7 @@ $(document).ready(function () {
         }
 
         var sets = getSetsForCurrentUrl(tab_url);
-        
+
         for (var i = 0; i < sets.length; i++) {
             localStorage.removeItem(sets[i].key);
         }
@@ -215,7 +225,7 @@ $(document).ready(function () {
     });
 
     $("#store").click(function () {
-        sendMessage({ "action": 'store' }, function readResponse(obj) {
+        sendMessage({"action": 'store'}, function readResponse(obj) {
             var error = $('#error');
             if (!obj || chrome.runtime.lastError || obj.error) {
 
@@ -236,7 +246,7 @@ $(document).ready(function () {
             var key = getRandomStorageId();
 
             var setSettings = {
-				url: tab_url,
+                url: tab_url,
                 autoSubmit: false,
                 submitQuery: '',
                 content: obj.content,
@@ -259,17 +269,17 @@ $(document).ready(function () {
         var key = $(this).parents('tr').data('key');
         var setSettings = JSON.parse(localStorage.getItem(key));
 
-        sendMessage({ action: 'fill', setSettings: setSettings }, function(response) {
-             window.close();
+        sendMessage({action: 'fill', setSettings: setSettings}, function (response) {
+            window.close();
         });
     });
-    
+
     sets.on("click", 'td.submit', function (event) {
         var td = $(this);
         var tr = td.parents('tr');
 
         try {
-            
+
             if (td.hasClass('active')) {
                 saveValue(tr, 'autoSubmit', false);
                 td.removeClass('active');
@@ -287,19 +297,19 @@ $(document).ready(function () {
             } else {
                 td.removeClass('active');
             }
-            
+
         } finally {
             refreshSetsList(tab_url);
-        } 
-        
+        }
+
     });
 
     sets.on("click", 'td.remove', function (event) {
         var tr = $(this).parents('tr');
         var key = tr.data('key');
-        
+
         localStorage.removeItem(key);
-		refreshSetsList(tab_url);
+        refreshSetsList(tab_url);
     });
 
     sets.on("click", 'td.export', function (event) {
@@ -320,15 +330,15 @@ $(document).ready(function () {
 
         exportBlock.find('#txtFormJson').val(formJson).focus().select();
     });
-    
+
     sets.on("click", 'td.hotkey', function (event) {
         var hotkeyBlock = $('#hotkeyBlock');
-        
+
         if (hotkeyBlock.is(':visible')) {
             hotkeyBlock.hide();
             return;
         }
-        
+
         var td = $(this);
         var tr = td.parents('tr');
         var value = getValue(tr, 'hotkey');
@@ -337,31 +347,31 @@ $(document).ready(function () {
         hotkeyBlock.show();
         hotkeyBlock.find('#txtHotkey').val(value).focus().select();
     });
-    
+
     sets.on("click", 'td.setName', function (event) {
         var td = $(this);
         if (td.find('input').length) {
             return;
         }
-        
+
         var tr = td.parents('tr');
         var input = $('<input type="text" class="span1 txtSetName" />');
         input.val(getValue(tr, 'name'));
 
         td.empty().append(input).find('input').focus().select();
     });
-    
+
     sets.on("keyup", 'input.txtSetName', function (e) {
         var textbox = $(this);
         var value = textbox.val();
-        
+
         if (!value) {
             return;
         }
 
         var code = e.keyCode || e.which;
         var tr = textbox.parents('tr');
-        
+
         if (code == 13) { //Enter keycode
             var td = textbox.parents('td');
             saveValue(tr, 'name', value);
@@ -370,35 +380,36 @@ $(document).ready(function () {
             saveValue(tr, 'name', value);
         }
     });
-    
+
     $('#hotkeyBlock').on("keyup", '#txtHotkey', function (e) {
         var code = e.keyCode || e.which;
         if (code == 13) { //Enter keycode
             $('#btnHotkeySave').click();
         }
     });
-    
-    $('#btnHotkeySave').click(function() {
+
+    $('#btnHotkeySave').click(function () {
         $('#hotkeyBlock').hide();
         var tr = $('#sets td.hotkey.active').parents('tr');
         var hotkey = $('#hotkeyBlock #txtHotkey').val();
         saveValue(tr, 'hotkey', hotkey);
         refreshSetsList(tab_url);
-        sendMessage({ "action": 'rebind' }, function(response) { });
+        sendMessage({"action": 'rebind'}, function (response) {
+        });
     });
-    
+
     $('#btnHotkeyCancel').click(function () {
         $('#hotkeyBlock').hide();
     });
-        
+
     $('#btnExportClose').click(function () {
         $('#exportBlock').hide();
     });
-    
+
     $('#btnImportClose').click(function () {
         $('#importBlock').hide();
     });
-    
+
     $('a.filter').click(function () {
         var link = $(this);
         var value = link.attr('id');
@@ -411,9 +422,9 @@ $(document).ready(function () {
     });
 
     sets
-      .on("mousedown", 'tbody td', function(event) {
-        $(this).addClass('clicked');
-    }).on("mouseup", 'tbody td', function(event) {
+        .on("mousedown", 'tbody td', function (event) {
+            $(this).addClass('clicked');
+        }).on("mouseup", 'tbody td', function (event) {
         $(this).removeClass('clicked');
     });
 
