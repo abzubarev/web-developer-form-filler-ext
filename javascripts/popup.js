@@ -116,7 +116,7 @@ function getValue(tr, property) {
 }
 
 function sendMessage(obj, callback) {
-    chrome.tabs.query({'active': true, 'currentWindow': true}, function (tab) {
+    chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
         chrome.tabs.sendMessage(tab[0].id, obj, callback);
     });
 }
@@ -141,15 +141,7 @@ function getRandomStorageId() {
     return key;
 }
 
-function validateImportedItems(items) {
-    items.forEach(item => {
-        if (!item.url || !item.content || !item.name) {
-            throw new Error("Invalid JSON format");
-        }
-    })
-}
-
-chrome.tabs.query({'active': true, 'currentWindow': true}, function (tab) {
+chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tab) {
     tab_url = tab[0].url;
     refreshSetsList(tab_url);
 });
@@ -188,21 +180,19 @@ $(document).ready(function () {
         try {
             var importedForm = JSON.parse(json);
 
-            if (!Array.isArray(importedForm)) {
-                importedForm = [importedForm]
+            if (!importedForm.url || !importedForm.content || !importedForm.name) {
+                throw new Error("Invalid JSON format");
             }
 
-            validateImportedItems(importedForm)
+            if (importedForm.url === '*'){
+                importedForm.name += '-global';
+            }
 
-            importedForm.forEach(item => {
-                if (item.url === '*') {
-                    item.name += '-global';
-                }
+            var key = getRandomStorageId();
+            localStorage.setItem(key, JSON.stringify(importedForm));
 
-                var key = getRandomStorageId();
-                localStorage.setItem(key, JSON.stringify(item));
-            })
-        } catch (err) {
+        }
+        catch (err) {
             alert('Got an error: ' + err.message);
         }
 
@@ -225,7 +215,7 @@ $(document).ready(function () {
     });
 
     $("#store").click(function () {
-        sendMessage({"action": 'store'}, function readResponse(obj) {
+        sendMessage({ "action": 'store' }, function readResponse(obj) {
             var error = $('#error');
             if (!obj || chrome.runtime.lastError || obj.error) {
 
@@ -269,7 +259,7 @@ $(document).ready(function () {
         var key = $(this).parents('tr').data('key');
         var setSettings = JSON.parse(localStorage.getItem(key));
 
-        sendMessage({action: 'fill', setSettings: setSettings}, function (response) {
+        sendMessage({ action: 'fill', setSettings: setSettings }, function(response) {
             window.close();
         });
     });
@@ -388,14 +378,13 @@ $(document).ready(function () {
         }
     });
 
-    $('#btnHotkeySave').click(function () {
+    $('#btnHotkeySave').click(function() {
         $('#hotkeyBlock').hide();
         var tr = $('#sets td.hotkey.active').parents('tr');
         var hotkey = $('#hotkeyBlock #txtHotkey').val();
         saveValue(tr, 'hotkey', hotkey);
         refreshSetsList(tab_url);
-        sendMessage({"action": 'rebind'}, function (response) {
-        });
+        sendMessage({ "action": 'rebind' }, function(response) { });
     });
 
     $('#btnHotkeyCancel').click(function () {
@@ -422,9 +411,9 @@ $(document).ready(function () {
     });
 
     sets
-        .on("mousedown", 'tbody td', function (event) {
+        .on("mousedown", 'tbody td', function(event) {
             $(this).addClass('clicked');
-        }).on("mouseup", 'tbody td', function (event) {
+        }).on("mouseup", 'tbody td', function(event) {
         $(this).removeClass('clicked');
     });
 
